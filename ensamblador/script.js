@@ -127,6 +127,24 @@ async function resetearTodo() {
         location.reload();
     }
 }
+function compartirWhatsApp() {
+    if (ensamblado.length === 0) {
+        alert("¡Primero agrega algo al ensamble, pe'!");
+        return;
+    }
 
+    let mensaje = "¡Habla! Aquí tienes el presupuesto de ArsoCorp:%0A%0A";
+    
+    ensamblado.forEach((p) => {
+        mensaje += `- ${p.nombre}: $${p.precio}%0A`;
+    });
+
+    const totalFinal = (ensamblado.reduce((s, x) => s + x.precio, 0) * 1.14).toFixed(2);
+    
+    mensaje += `%0A*TOTAL FINAL (+14%): $${totalFinal}*`;
+
+    // Abrir WhatsApp con el mensaje listo
+    window.open(`https://wa.me/?text=${mensaje}`, '_blank');
+}
 // ARRANQUE
 cargarDeSheets();
