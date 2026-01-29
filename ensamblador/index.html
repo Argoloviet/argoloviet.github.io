@@ -1,1 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculador de Ensamblados</title>
+</head>
+<body>
+
+<h2>Agregar parte</h2>
+<input id="nombre" placeholder="Nombre">
+<input id="precio" type="number" placeholder="Precio">
+<button onclick="agregarParte()">Agregar</button>
+
+<h3>Partes guardadas</h3>
+<ul id="listaPartes"></ul>
+
+<hr>
+
+<h2>Ensamblar</h2>
+<select id="selector"></select>
+<button onclick="agregarAlEnsamblado()">Agregar</button>
+
+<ul id="listaEnsamblado"></ul>
+<h3>Total: $<span id="total">0</span></h3>
+
+<h3>Total: $<span id="total">0</span></h3>
+<button onclick="limpiarEnsamblado()" style="background-color: #ff4d4d; color: white;">Vaciar Ensamblado</button>
+<script src="script.js"></script>
+</body>
+</html>
 
