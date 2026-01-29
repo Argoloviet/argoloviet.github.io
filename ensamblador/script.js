@@ -1,3 +1,31 @@
+// --- SISTEMA DE SEGURIDAD ARSOCORP ---
+const CLAVE_CORRECTA = "arsocorp2026"; // <--- Cambia tu clave aquí, cholo
+
+function verificarAcceso() {
+    // Revisamos si ya puso la clave antes en esta sesión
+    const yaLogueado = sessionStorage.getItem("accesoConcedido");
+
+    if (yaLogueado !== "true") {
+        const password = prompt("¡Habla! Ingresa la clave de ArsoCorp para entrar:");
+
+        if (password === CLAVE_CORRECTA) {
+            // Guardamos que ya entró para que no pida de nuevo
+            sessionStorage.setItem("accesoConcedido", "true");
+            alert("¡Clave correcta! Bienvenido, jefe.");
+        } else {
+            alert("¡Tú no eres de la batería! Acceso denegado.");
+            // Lo mandamos a la página principal para que no joda
+            window.location.href = "../index.html"; 
+            
+            // Por si las moscas, bloqueamos el body
+            document.body.innerHTML = "<h1 style='color:white; text-align:center; margin-top:50px;'>No tienes permiso, causa.</h1>";
+        }
+    }
+}
+
+// Ejecutamos la seguridad al toque
+verificarAcceso();
+// --- FIN SEGURIDAD ---
 // Capturando los elementos (Bien ahí, batería)
 const nombreInput = document.getElementById("nombre");
 const precioInput = document.getElementById("precio");
@@ -148,3 +176,4 @@ function compartirWhatsApp() {
 }
 // ARRANQUE
 cargarDeSheets();
+
