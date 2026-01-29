@@ -66,18 +66,22 @@ function actualizarInterfaz() {
             </li>`;
         selector.innerHTML += `<option value="${i}">${p.nombre}</option>`;
     });
-
-    // Ensamblado con botón para borrar solo de tu lista actual
     let suma = 0;
     ensamblado.forEach((p, i) => {
         listaEnsamblado.innerHTML += `
             <li>
-                ${p.nombre} - $${p.precio}
-                <button onclick="eliminarDelEnsamblado(${i})" style="color:orange; border:none; background:none; cursor:pointer;">[Quitar]</button>
+                <span>${p.nombre} - <b>$${p.precio}</b></span>
+                <button class="btn-remove" onclick="eliminarDelEnsamblado(${i})">QUITAR</button>
             </li>`;
         suma += p.precio;
     });
-    totalSpan.textContent = suma.toFixed(2);
+
+    // Cálculos
+    const aumentado = suma * 1.14; // El 14% más
+
+    // Mostrar en pantalla
+    document.getElementById("total").textContent = suma.toFixed(2);
+    document.getElementById("totalAumentado").textContent = aumentado.toFixed(2);
 }
 // Borrar del catálogo (afecta a Google Sheets)
 async function eliminarParteDelCatalogo(indice) {
