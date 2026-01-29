@@ -1,31 +1,57 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Calculador de Ensamblados</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculador de Ensamblados | ArsoCorp</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2>Agregar parte</h2>
-<input id="nombre" placeholder="Nombre">
-<input id="precio" type="number" placeholder="Precio">
-<button onclick="agregarParte()">Agregar</button>
+<div class="container">
+    <header>
+        <h1 style="text-align: center; color: var(--accent);">ArsoCorp Builder</h1>
+    </header>
 
-<h3>Partes guardadas</h3>
-<ul id="listaPartes"></ul>
+    <div class="card">
+        <h2>Agregar parte al Inventario</h2>
+        <input id="nombre" placeholder="Nombre de la pieza (Ej: RTX 4090)">
+        <input id="precio" type="number" placeholder="Precio en $">
+        <button class="btn-add" onclick="agregarParte()">Guardar en Nube</button>
 
-<hr>
+        <h3>Partes en Almacén</h3>
+        <ul id="listaPartes"></ul>
+    </div>
 
-<h2>Ensamblar</h2>
-<select id="selector"></select>
-<button onclick="agregarAlEnsamblado()">Agregar</button>
+    <hr style="border: 0; height: 1px; background: #334155; margin: 20px 0;">
 
-<ul id="listaEnsamblado"></ul>
-<h3>Total: $<span id="total">0</span></h3>
+    <div class="card">
+        <h2>Armar Ensamblado</h2>
+        <select id="selector">
+            <option value="">Cargando partes...</option>
+        </select>
+        <button class="btn-add" onclick="agregarAlEnsamblado()" style="background: var(--success); color: white;">Agregar al Presupuesto</button>
 
-<h3>Total: $<span id="total">0</span></h3>
-<button onclick="limpiarEnsamblado()" style="background-color: #ff4d4d; color: white;">Vaciar Ensamblado</button>
+        <h3>Piezas Seleccionadas</h3>
+        <ul id="listaEnsamblado"></ul>
+
+        <div class="total-box">
+            <div class="total-row">
+                <span>Subtotal:</span>
+                <span>$<span id="total">0.00</span></span>
+            </div>
+            <div class="total-row" style="margin-top: 10px; border-top: 1px solid #1e293b; padding-top: 10px;">
+                <span style="font-weight: bold;">Total con Ganancia (14%):</span>
+                <span class="total-plus">$<span id="totalAumentado">0.00</span></span>
+            </div>
+        </div>
+
+        <button onclick="limpiarEnsamblado()" class="btn-clear" style="background-color: #ff4d4d; color: white; margin-top: 20px; font-size: 12px;">
+            VACIAR ENSAMBLADO
+        </button>
+    </div>
+</div>
+
 <script src="script.js"></script>
 </body>
 </html>
-
