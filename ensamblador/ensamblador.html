@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Ensamblado</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 style="text-align: center; color: var(--accent);">Ensamblador Pro</h1>
+        </header>
+
+        <div class="card">
+    <h2>Seleccionar Piezas</h2>
+    <input id="buscarSelector" oninput="actualizarInterfaz()" placeholder="🔍 Escribe para filtrar piezas...">
+    
+    <select id="selector">
+        <option value="">Cargando catálogo...</option>
+    </select>
+            <button class="btn-add" onclick="agregarAlEnsamblado()" style="background: var(--success); color: white;">Agregar al Presupuesto</button>
+
+            <h3>Presupuesto Actual</h3>
+            <ul id="listaEnsamblado"></ul>
+
+            <div class="total-box">
+                <div class="total-row"><span>Subtotal:</span><span>$<span id="total">0.00</span></span></div>
+                <div class="total-row" style="margin-top: 10px; border-top: 1px solid #1e293b; padding-top: 10px;">
+                    <span style="font-weight: bold;">Total (+14%):</span>
+                    <span class="total-plus">$<span id="totalAumentado">0.00</span></span>
+                </div>
+            </div>
+
+            <button onclick="compartirWhatsApp()" style="background-color: #25d366; color: white; margin-top: 15px;">ENVIAR POR WHATSAPP</button>
+            <button onclick="limpiarEnsamblado()" class="btn-clear" style="background-color: #ff4d4d; color: white; margin-top: 10px; font-size: 11px;">VACIAR LISTA</button>
+            <button onclick="window.location.href='index.html'" style="background: none; color: #94a3b8; font-size: 12px; margin-top: 10px; border: none; cursor: pointer;">← Volver al Inventario</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
