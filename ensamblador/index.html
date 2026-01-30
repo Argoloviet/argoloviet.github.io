@@ -3,58 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculador de Ensamblados | ArsoCorp</title>
+    <title>Inventario ArsoCorp</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="container">
+        <header>
+            <h1 style="text-align: center; color: var(--accent);">Gestión de Inventario</h1>
+        </header>
 
-<div class="container">
-    <header>
-        <h1 style="text-align: center; color: var(--accent);">ArsoCorp Builder</h1>
-    </header>
-
-    <div class="card">
-        <h2>Agregar parte al Inventario</h2>
-        <input id="nombre" placeholder="Nombre de la pieza (Ej: TAPA DE UN TROFEO)">
-        <input id="precio" type="number" placeholder="Precio en $">
-        <button class="btn-add" onclick="agregarParte()">Guardar en Nube</button>
-
-        <h3>Partes en Almacén</h3>
-        <ul id="listaPartes"></ul>
-    </div>
-
-    <hr style="border: 0; height: 1px; background: #334155; margin: 20px 0;">
-
-    <div class="card">
-        <h2>Armar Ensamblado</h2>
-        <select id="selector">
-            <option value="">Cargando partes...</option>
-        </select>
-        <button class="btn-add" onclick="agregarAlEnsamblado()" style="background: var(--success); color: white;">Agregar al Presupuesto</button>
-
-        <h3>Piezas Seleccionadas</h3>
-        <ul id="listaEnsamblado"></ul>
-
-        <div class="total-box">
-            <div class="total-row">
-                <span>Subtotal:</span>
-                <span>$<span id="total">0.00</span></span>
-            </div>
-            <div class="total-row" style="margin-top: 10px; border-top: 1px solid #1e293b; padding-top: 10px;">
-                <span style="font-weight: bold;">Total con Ganancia (14%):</span>
-                <span class="total-plus">$<span id="totalAumentado">0.00</span></span>
-            </div>
+        <div class="card">
+            <h2>Agregar nueva parte</h2>
+            <input id="nombre" placeholder="Nombre de la pieza">
+            <input id="precio" type="number" placeholder="Precio en $">
+            <button class="btn-add" onclick="agregarParte()">Guardar en la Nube</button>
         </div>
 
-        <button onclick="limpiarEnsamblado()" class="btn-clear" style="background-color: #ff4d4d; color: white; margin-top: 20px; font-size: 12px;">
-            VACIAR ENSAMBLADO
-        </button>
-        <button onclick="compartirWhatsApp()" style="background-color: #25d366; color: white; margin-top: 10px;">
-         ENVIAR PRESUPUESTO POR WHATSAPP
-            </button>
-    </div>
-</div>
+        <div class="card">
+          <h3>Gestión de Almacén</h3>
+             <input id="buscarInventario" oninput="actualizarInterfaz()" placeholder="🔍 Buscar pieza en almacén...">   
+              <button id="btnToggle" onclick="toggleInventario()" style="background: #334155; margin-bottom: 10px;">
+                MOSTRAR TODO EL INVENTARIO
+               </button>
 
-<script src="script.js"></script>
+            <div id="contenedorInventario" style="display: none;">
+                <ul id="listaPartes"></ul>
+            </div>
+
+            <button onclick="window.location.href='ensamblador.html'" style="background: var(--card); border: 1px solid var(--accent); color: var(--accent); margin-top: 20px;">
+                Ir a Panel de Ensamblado →
+            </button>
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
