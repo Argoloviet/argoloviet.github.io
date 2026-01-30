@@ -47,13 +47,24 @@ async function guardarEnSheets() {
 async function agregarParte() {
     const n = document.getElementById("nombre");
     const p = document.getElementById("precio");
+    
     if (n && p && n.value && p.value) {
-        partes.push({ nombre: n.value, precio: Number(p.value) });
+        const nuevaParte = { nombre: n.value, precio: Number(p.value) };
+        
+        // Lo agregamos a la pantalla primero
+        partes.push(nuevaParte);
         actualizarInterfaz();
-        await guardarEnSheets();
+        
+        // MANDAMOS SOLO LA PARTE NUEVA (Más rápido y seguro)
+        await fetch(URL_SCRIPT, {
+            method: "POST",
+            mode: "no-cors",
+            body: JSON.stringify(nuevaParte) // Solo mandamos uno
+        });
+
         n.value = ""; p.value = "";
     } else {
-        alert("Mete datos reales, pe'");
+        alert("¡Mete datos, batería!");
     }
 }
 
