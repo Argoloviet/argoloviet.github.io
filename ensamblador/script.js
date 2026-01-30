@@ -1,4 +1,5 @@
 // --- 1. CONFIGURACIÓN ---
+
 const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbwo8Tz5oXEwJK2e0Z4ObYLOMLxKXc8n13lqy2N1OL0WHAgKBpr4Ky9i-v5NPYJT7wk05Q/exec";
 const CLAVE_CORRECTA = "arsocorp2026";
 
@@ -175,3 +176,4 @@ function actualizarInterfaz() {
 
 // --- ARRANQUE ---
 cargarDeSheets();
+
