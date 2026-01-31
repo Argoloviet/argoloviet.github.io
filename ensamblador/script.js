@@ -1,13 +1,9 @@
 // --- 1. CONFIGURACIÓN ---
-const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbwKbLTf3_6F4xM1Iaq5Oxd10yvC9o0y_WjS10yQg-KgHQzm-McIhmGYclf6hh1dc6X3Kw/exec";
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzR-GcjY0m6B6tG1fU-X59_242wsHlmKsoj2P_-OuickxH4sm3AnkQAfFuqPzQI5emSDw/exec";
 const CLAVE_CORRECTA = "arsocorp2026";
 
-// --- 2. SEGURIDAD (Solo salta en el ensamblador) ---
+// --- 2. SEGURIDAD ---
 if (window.location.pathname.includes("ensamblador.html")) {
-    verificarAcceso();
-}
-
-function verificarAcceso() {
     const yaLogueado = sessionStorage.getItem("accesoConcedido");
     if (yaLogueado !== "true") {
         const password = prompt("¡Habla, Jefe! Clave de ArsoCorp:");
@@ -24,25 +20,20 @@ function verificarAcceso() {
 let partes = [];
 let ensamblado = JSON.parse(localStorage.getItem("ensamblado")) || [];
 
-// --- 4. CARGA Y LIMPIEZA DE DATOS ---
+// --- 4. CARGA DE DATOS ---
 async function cargarDeSheets() {
     try {
         const resp = await fetch(URL_SCRIPT);
         const data = await resp.json();
-        
-        // FILTRO DE SEGURIDAD: Borra filas vacías o corruptas del Excel
-        partes = data.filter(p => p.nombre && p.nombre.toString().trim() !== "" && p.precio !== null);
-        
-        // Ordenamos de la A a la Z
+        partes = data.filter(p => p.nombre && p.nombre.toString().trim() !== "");
         partes.sort((a, b) => a.nombre.localeCompare(b.nombre));
-        
         actualizarInterfaz();
     } catch (error) {
         console.error("Error al cargar:", error);
     }
 }
 
-// --- 5. ACTUALIZAR PANTALLA (LA MÁGICA) ---
+// --- 5. ACTUALIZAR INTERFAZ ---
 function actualizarInterfaz() {
     const listaPartes = document.getElementById("listaPartes");
     const selector = document.getElementById("selector");
@@ -51,26 +42,23 @@ function actualizarInterfaz() {
     const filtroInv = document.getElementById("buscarInventario")?.value.toLowerCase() || "";
     const filtroSel = document.getElementById("buscarSelector")?.value.toLowerCase() || "";
 
-    // Siempre ordenamos A-Z antes de mostrar
     partes.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
-    // A. Inventario (index.html)
     if (listaPartes) {
         let html = "";
         partes.forEach((p) => {
             if (p.nombre.toLowerCase().includes(filtroInv)) {
-                // AQUÍ ESTÁ EL CAMBIO: Mandamos p.nombre en lugar de i
+                // DOBLE CANDADO: Mandamos nombre y precio al botón X
                 html += `
                 <li>
                     <span>${p.nombre} - <b>$${p.precio}</b></span>
-                    <button class="btn-remove" onclick="eliminarParteDelCatalogo('${p.nombre.replace(/'/g, "\\'")}')">X</button>
+                    <button class="btn-remove" onclick="eliminarParteDelCatalogo('${p.nombre.replace(/'/g, "\\'")}', '${p.precio}')">X</button>
                 </li>`;
             }
         });
         listaPartes.innerHTML = html;
     }
 
-    // B. Selector (ensamblador.html)
     if (selector) {
         let options = '<option value="">-- Resultados --</option>';
         partes.forEach((p, i) => {
@@ -81,7 +69,6 @@ function actualizarInterfaz() {
         selector.innerHTML = options;
     }
 
-    // C. Carrito de Ensamblado
     if (listaEnsamblado) {
         let htmlEns = "";
         let suma = 0;
@@ -99,14 +86,55 @@ function actualizarInterfaz() {
     }
 }
 
-// --- 6. ACCIONES DE BOTONES ---
+// --- 6. ACCIONES ---
+async function agregarParte() {
+    const n = document.getElementById("nombre");
+    const p = document.getElementById("precio");
+    if (n && p && n.value && p.value) {
+        let precioLimpio = p.value.replace(",", ".");
+        const nueva = { nombre: n.value.trim(), precio: precioLimpio }; // Lo mandamos como string para el apóstrofe
+        
+        partes.push({ nombre: nueva.nombre, precio: parseFloat(precioLimpio) });
+        actualizarInterfaz();
+
+        await fetch(URL_SCRIPT, {
+            method: "POST",
+            mode: "no-cors",
+            body: JSON.stringify(nueva)
+        });
+        n.value = ""; p.value = "";
+    }
+}
+
+async function eliminarParteDelCatalogo(nombreABorrar, precioABorrar) {
+    if (confirm(`¿Eliminar "${nombreABorrar}" de $${precioABorrar}?`)) {
+        const respaldo = [...partes];
+        // Filtro local estricto
+        partes = partes.filter(p => !(p.nombre === nombreABorrar && p.precio.toString() === precioABorrar.toString()));
+        actualizarInterfaz();
+
+        try {
+            await fetch(URL_SCRIPT, {
+                method: "POST",
+                mode: "no-cors",
+                body: JSON.stringify({
+                    borrar: true,
+                    nombre: nombreABorrar,
+                    precio: precioABorrar
+                })
+            });
+        } catch (error) {
+            partes = respaldo;
+            actualizarInterfaz();
+            alert("Error de conexión.");
+        }
+    }
+}
 
 // Mostrar/Ocultar Inventario
 function toggleInventario() {
     const div = document.getElementById("contenedorInventario");
     const btn = document.getElementById("btnToggle");
-    if (!div) return;
-
     if (div.style.display === "none" || div.style.display === "") {
         div.style.display = "block";
         btn.textContent = "OCULTAR INVENTARIO";
@@ -116,61 +144,6 @@ function toggleInventario() {
     }
 }
 
-// Agregar al Inventario (index.html)
-async function agregarParte() {
-    const n = document.getElementById("nombre");
-    const p = document.getElementById("precio");
-    
-    if (n && p && n.value && p.value) {
-        // Limpiamos el precio por si usan comas en vez de puntos
-        let precioLimpio = p.value.replace(",", ".");
-        const nueva = { nombre: n.value.trim(), precio: parseFloat(precioLimpio) };
-        
-        partes.push(nueva);
-        partes.sort((a, b) => a.nombre.localeCompare(b.nombre));
-        actualizarInterfaz();
-
-        await fetch(URL_SCRIPT, {
-            method: "POST",
-            mode: "no-cors",
-            body: JSON.stringify(nueva)
-        });
-
-        n.value = ""; p.value = "";
-    } else {
-        alert("Llena los campos, batería.");
-    }
-}
-
-// Borrar del Almacén
-async function eliminarParteDelCatalogo(nombreABorrar) {
-    if (confirm(`¿Seguro que quieres eliminar "${nombreABorrar}" del almacén?`)) {
-        
-        const respaldo = [...partes]; // Guardamos copia de seguridad
-
-        // FILTRADO POR NOMBRE: Creamos una nueva lista sin el elemento que coincide
-        partes = partes.filter(p => p.nombre !== nombreABorrar);
-        
-        actualizarInterfaz(); // Actualizamos la pantalla al toque
-
-        try {
-            // Mandamos la lista actualizada a la nube
-            await fetch(URL_SCRIPT, {
-                method: "POST",
-                mode: "no-cors",
-                body: JSON.stringify(partes) 
-            });
-            console.log("Nube sincronizada");
-        } catch (error) {
-            // Si algo falla, restauramos la lista anterior
-            partes = respaldo;
-            actualizarInterfaz();
-            alert("Error de conexión. El producto no se borró en la nube.");
-        }
-    }
-}
-
-// Lógica del Carrito (ensamblador.html)
 function agregarAlEnsamblado() {
     const sel = document.getElementById("selector");
     if (sel && sel.value !== "") {
@@ -187,16 +160,15 @@ function eliminarDelEnsamblado(i) {
 }
 
 function limpiarEnsamblado() {
-    if (confirm("¿Vaciar todo el presupuesto?")) {
+    if (confirm("¿Vaciar presupuesto?")) {
         ensamblado = [];
         localStorage.setItem("ensamblado", JSON.stringify(ensamblado));
         actualizarInterfaz();
     }
 }
 
-// WhatsApp
 function compartirWhatsApp() {
-    if (ensamblado.length === 0) return alert("Agrega piezas primero.");
+    if (ensamblado.length === 0) return alert("Agrega piezas.");
     let msj = "*Presupuesto ArsoCorp*%0A%0A";
     ensamblado.forEach(p => msj += `- ${p.nombre}: $${p.precio}%0A`);
     const totalFinal = (ensamblado.reduce((s, x) => s + x.precio, 0) * 1.14).toFixed(2);
@@ -204,6 +176,4 @@ function compartirWhatsApp() {
     window.open(`https://wa.me/?text=${msj}`, '_blank');
 }
 
-// ARRANQUE INICIAL
 cargarDeSheets();
-
