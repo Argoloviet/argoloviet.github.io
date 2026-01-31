@@ -1,5 +1,5 @@
 // --- 1. CONFIGURACIÓN ---
-const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxCfaHgHGkla_oLgro-ZocA1O-REcC8Tzzm5rw72clNWTjNa-YmbapMzxE1Y9JXyegiyg/exec";
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbznJ9yOgcrxIGp7XkUkhx9FRCTCONrzMppaYpApHgyFwc5F42PkIfmU2T_vwsYbW4vDWQ/exec";
 const CLAVE_CORRECTA = "arsocorp2026";
 
 // --- 2. SEGURIDAD (Solo salta en el ensamblador) ---
@@ -51,24 +51,28 @@ function actualizarInterfaz() {
     const filtroInv = document.getElementById("buscarInventario")?.value.toLowerCase() || "";
     const filtroSel = document.getElementById("buscarSelector")?.value.toLowerCase() || "";
 
-    // A. Si estamos en INDEX.HTML (Inventario)
+    // Siempre ordenamos A-Z antes de mostrar
+    partes.sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+    // A. Inventario (index.html)
     if (listaPartes) {
-        let htmlContent = "";
-        partes.forEach((p, i) => {
+        let html = "";
+        partes.forEach((p) => {
             if (p.nombre.toLowerCase().includes(filtroInv)) {
-                htmlContent += `
+                // AQUÍ ESTÁ EL CAMBIO: Mandamos p.nombre en lugar de i
+                html += `
                 <li>
                     <span>${p.nombre} - <b>$${p.precio}</b></span>
-                    <button class="btn-remove" onclick="eliminarParteDelCatalogo(${i})">X</button>
+                    <button class="btn-remove" onclick="eliminarParteDelCatalogo('${p.nombre.replace(/'/g, "\\'")}')">X</button>
                 </li>`;
             }
         });
-        listaPartes.innerHTML = htmlContent;
+        listaPartes.innerHTML = html;
     }
 
-    // B. Si estamos en ENSAMBLADOR.HTML (Selector)
+    // B. Selector (ensamblador.html)
     if (selector) {
-        let options = '<option value="">-- Selecciona una pieza --</option>';
+        let options = '<option value="">-- Resultados --</option>';
         partes.forEach((p, i) => {
             if (p.nombre.toLowerCase().includes(filtroSel)) {
                 options += `<option value="${i}">${p.nombre} - $${p.precio}</option>`;
@@ -77,16 +81,13 @@ function actualizarInterfaz() {
         selector.innerHTML = options;
     }
 
-    // C. El carrito de ensamblado
+    // C. Carrito de Ensamblado
     if (listaEnsamblado) {
         let htmlEns = "";
         let suma = 0;
         ensamblado.forEach((p, i) => {
-            htmlEns += `
-                <li>
-                    <span>${p.nombre} - <b>$${p.precio}</b></span>
-                    <button class="btn-remove" onclick="eliminarDelEnsamblado(${i})">X</button>
-                </li>`;
+            htmlEns += `<li><span>${p.nombre} - <b>$${p.precio}</b></span> 
+                        <button class="btn-remove" onclick="eliminarDelEnsamblado(${i})">X</button></li>`;
             suma += p.precio;
         });
         listaEnsamblado.innerHTML = htmlEns;
@@ -142,16 +143,30 @@ async function agregarParte() {
 }
 
 // Borrar del Almacén
-async function eliminarParteDelCatalogo(indice) {
-    if (confirm("¿Borrar del almacén permanentemente?")) {
-        partes.splice(indice, 1);
-        actualizarInterfaz();
-        // Mandamos la lista completa para sincronizar el borrado en la nube
-        await fetch(URL_SCRIPT, {
-            method: "POST",
-            mode: "no-cors",
-            body: JSON.stringify(partes)
-        });
+async function eliminarParteDelCatalogo(nombreABorrar) {
+    if (confirm(`¿Seguro que quieres eliminar "${nombreABorrar}" del almacén?`)) {
+        
+        const respaldo = [...partes]; // Guardamos copia de seguridad
+
+        // FILTRADO POR NOMBRE: Creamos una nueva lista sin el elemento que coincide
+        partes = partes.filter(p => p.nombre !== nombreABorrar);
+        
+        actualizarInterfaz(); // Actualizamos la pantalla al toque
+
+        try {
+            // Mandamos la lista actualizada a la nube
+            await fetch(URL_SCRIPT, {
+                method: "POST",
+                mode: "no-cors",
+                body: JSON.stringify(partes) 
+            });
+            console.log("Nube sincronizada");
+        } catch (error) {
+            // Si algo falla, restauramos la lista anterior
+            partes = respaldo;
+            actualizarInterfaz();
+            alert("Error de conexión. El producto no se borró en la nube.");
+        }
     }
 }
 
@@ -191,4 +206,3 @@ function compartirWhatsApp() {
 
 // ARRANQUE INICIAL
 cargarDeSheets();
-
