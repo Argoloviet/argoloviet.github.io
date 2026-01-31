@@ -1,5 +1,5 @@
 // --- 1. CONFIGURACIÓN ---
-const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzR-GcjY0m6B6tG1fU-X59_242wsHlmKsoj2P_-OuickxH4sm3AnkQAfFuqPzQI5emSDw/exec";
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbz6hkvZVYzA7Z1uM0lAK4loX8WPvgaGTWufghAKizY7KEg6KUCaKPMuMype-Ku5QcgmTA/exec";
 const CLAVE_CORRECTA = "arsocorp2026";
 
 // --- 2. SEGURIDAD ---
@@ -107,10 +107,21 @@ async function agregarParte() {
 }
 
 async function eliminarParteDelCatalogo(nombreABorrar, precioABorrar) {
-    if (confirm(`¿Eliminar "${nombreABorrar}" de $${precioABorrar}?`)) {
-        const respaldo = [...partes];
-        // Filtro local estricto
-        partes = partes.filter(p => !(p.nombre === nombreABorrar && p.precio.toString() === precioABorrar.toString()));
+    if (confirm(`¿Limpiar repetidos de "${nombreABorrar}" y dejar solo uno?`)) {
+        
+        // En la web hacemos la misma lógica: dejamos solo uno en la lista 'partes'
+        let yaDejeUno = false;
+        partes = partes.filter(p => {
+            if (p.nombre === nombreABorrar && p.precio.toString() === precioABorrar.toString()) {
+                if (!yaDejeUno) {
+                    yaDejeUno = true;
+                    return true; // Se queda el primero
+                }
+                return false; // Se van los demás
+            }
+            return true; // Se quedan los productos diferentes
+        });
+        
         actualizarInterfaz();
 
         try {
@@ -120,13 +131,11 @@ async function eliminarParteDelCatalogo(nombreABorrar, precioABorrar) {
                 body: JSON.stringify({
                     borrar: true,
                     nombre: nombreABorrar,
-                    precio: precioABorrar
+                    precio: precioABorrar.toString()
                 })
             });
         } catch (error) {
-            partes = respaldo;
-            actualizarInterfaz();
-            alert("Error de conexión.");
+            alert("Error al sincronizar con la nube.");
         }
     }
 }
