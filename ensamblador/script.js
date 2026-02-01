@@ -1,5 +1,5 @@
 // --- 1. CONFIGURACIÓN ---
-const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbz6hkvZVYzA7Z1uM0lAK4loX8WPvgaGTWufghAKizY7KEg6KUCaKPMuMype-Ku5QcgmTA/exec";
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbyeGiWsHhA7XbRMzSpcYW1ETrEwwHbhO__XwmozWcunSxgwD1MsAZTVu74XeeynMHWbxQ/exec";
 const CLAVE_CORRECTA = "arsocorp2026";
 
 // --- 2. SEGURIDAD ---
@@ -87,55 +87,71 @@ function actualizarInterfaz() {
 }
 
 // --- 6. ACCIONES ---
+// --- AGREGAR CON ADVERTENCIA ---
 async function agregarParte() {
     const n = document.getElementById("nombre");
     const p = document.getElementById("precio");
+    
     if (n && p && n.value && p.value) {
-        let precioLimpio = p.value.replace(",", ".");
-        const nueva = { nombre: n.value.trim(), precio: precioLimpio }; // Lo mandamos como string para el apóstrofe
-        
-        partes.push({ nombre: nueva.nombre, precio: parseFloat(precioLimpio) });
+        let nombreNuevo = n.value.trim();
+        let precioNuevo = p.value.replace(",", ".");
+
+        // REVISAR SI YA EXISTE IGUAL
+        const existe = partes.find(item => 
+            item.nombre.toLowerCase() === nombreNuevo.toLowerCase() && 
+            item.precio.toString() === precioNuevo.toString()
+        );
+
+        if (existe) {
+            if (!confirm(`¡Habla pashpito! "${nombreNuevo}" con precio $${precioNuevo} ya está en el inventario. ¿Seguro que quieres almacenarlo de nuevo?`)) {
+                return; // Si dice que no, cancelamos
+            }
+        }
+
+        const nueva = { nombre: nombreNuevo, precio: parseFloat(precioNuevo) };
+        partes.push(nueva);
         actualizarInterfaz();
 
         await fetch(URL_SCRIPT, {
             method: "POST",
             mode: "no-cors",
-            body: JSON.stringify(nueva)
+            body: JSON.stringify({ nombre: nueva.nombre, precio: precioNuevo })
         });
+
         n.value = ""; p.value = "";
     }
 }
 
+// --- BORRAR SOLO UNO (FRANCOTIRADOR) ---
 async function eliminarParteDelCatalogo(nombreABorrar, precioABorrar) {
-    if (confirm(`¿Limpiar repetidos de "${nombreABorrar}" y dejar solo uno?`)) {
+    if (confirm(`¿Seguro que quieres borrar una unidad de "${nombreABorrar}"?`)) {
         
-        // En la web hacemos la misma lógica: dejamos solo uno en la lista 'partes'
-        let yaDejeUno = false;
-        partes = partes.filter(p => {
-            if (p.nombre === nombreABorrar && p.precio.toString() === precioABorrar.toString()) {
-                if (!yaDejeUno) {
-                    yaDejeUno = true;
-                    return true; // Se queda el primero
-                }
-                return false; // Se van los demás
-            }
-            return true; // Se quedan los productos diferentes
-        });
-        
-        actualizarInterfaz();
+        const respaldo = [...partes];
 
-        try {
-            await fetch(URL_SCRIPT, {
-                method: "POST",
-                mode: "no-cors",
-                body: JSON.stringify({
-                    borrar: true,
-                    nombre: nombreABorrar,
-                    precio: precioABorrar.toString()
-                })
-            });
-        } catch (error) {
-            alert("Error al sincronizar con la nube.");
+        // Borramos solo el primero que encontremos en la lista local
+        const indice = partes.findIndex(p => 
+            p.nombre === nombreABorrar && p.precio.toString() === precioABorrar.toString()
+        );
+        
+        if (indice !== -1) {
+            partes.splice(indice, 1); // Quita solo 1 elemento
+            actualizarInterfaz();
+
+            try {
+                await fetch(URL_SCRIPT, {
+                    method: "POST",
+                    mode: "no-cors",
+                    body: JSON.stringify({
+                        borrar: true,
+                        nombre: nombreABorrar,
+                        precio: precioABorrar.toString()
+                    })
+                });
+            } catch (error) {
+                partes = respaldo;
+                actualizarInterfaz();
+                alert("Error de conexión.");
+            }
         }
     }
 }
