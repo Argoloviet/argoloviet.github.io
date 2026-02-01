@@ -1,5 +1,5 @@
 // --- 1. CONFIGURACIÓN ---
-const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbyeGiWsHhA7XbRMzSpcYW1ETrEwwHbhO__XwmozWcunSxgwD1MsAZTVu74XeeynMHWbxQ/exec";
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxvBdEELI8QZxry48uS3J6vdbL7yjEZYVlZW99BsjzyLlewkc_V4FSfN4hG0tjr6uAFRQ/exec";
 const CLAVE_CORRECTA = "arsocorp2026";
 
 // --- 2. SEGURIDAD ---
@@ -202,4 +202,5 @@ function compartirWhatsApp() {
 }
 
 cargarDeSheets();
+
 
