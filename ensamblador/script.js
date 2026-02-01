@@ -3,7 +3,7 @@ const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbyeGiWsHhA7XbRMzSpcY
 const CLAVE_CORRECTA = "arsocorp2026";
 
 // --- 2. SEGURIDAD ---
-if (window.location.pathname.includes("ensamblador.html")) {
+if (window.location.pathname.includes("index.html")) {
     const yaLogueado = sessionStorage.getItem("accesoConcedido");
     if (yaLogueado !== "true") {
         const password = prompt("¡Habla, Jefe! Clave de ArsoCorp:");
@@ -202,3 +202,4 @@ function compartirWhatsApp() {
 }
 
 cargarDeSheets();
+
