@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <title>La Banda del CS</title>
 
-    <!-- Fuente más rock -->
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto&display=swap" rel="stylesheet">
 
     <style>
@@ -75,6 +74,39 @@
             width: 100%;
         }
 
+        /* VIDEO STYLE */
+        .video-card {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .video-card img {
+            width: 100%;
+            display: block;
+            filter: brightness(0.8);
+            transition: 0.3s;
+        }
+
+        .video-card:hover img {
+            filter: brightness(0.5);
+        }
+
+        .play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 60px;
+            color: #ff3c00;
+            text-shadow: 0 0 20px rgba(255,60,0,0.8);
+            pointer-events: none;
+            transition: 0.2s;
+        }
+
+        .video-card:hover .play-btn {
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+
         .badge {
             display: inline-block;
             background: #ff3c00;
@@ -99,7 +131,7 @@
 
 <header>
     <h1>La Banda del CS</h1>
-    <div class="subtitle">Rock + Counter-Strike = Caos 🔥</div>
+    <div class="subtitle">Rock + Counter-Strike = Downs</div>
 </header>
 
 <div class="container">
@@ -109,21 +141,25 @@
         <p>
             Somos un dúo de rock: guitarra y teclado con voz.
             Agarramos temas conocidos y los convertimos en canciones
-            sobre el Counter-Strike: ranked, clutchs, tilteo y gloria.
+            sobre el Counter-Strike: downs, juanitus, baneos y chiteros.
         </p>
-        <div class="badge">Guitarra + Teclado/Voz</div>
-        <div class="badge">Rock Gamer</div>
+        <div class="badge">Guitarrista</div>
+        <div class="badge">Tecladista/Vocalista</div>
     </div>
 
-    <h2>Demos</h2>
+    <h2>Canciones</h2>
 
+    <!-- Arde todo el site -->
     <div class="card">
         <div class="demo-title">🔥 Arde todo el site</div>
-        <audio controls>
-            <source src="arde-todo-el-site.mp3" type="audio/mpeg">
-        </audio>
+
+        <a href="https://www.youtube.com/watch?v=neR50--d6Gg" target="_blank" class="video-card">
+            <img src="https://img.youtube.com/vi/neR50--d6Gg/hqdefault.jpg">
+            <div class="play-btn">▶</div>
+        </a>
     </div>
 
+    <!-- Estoy en B (SE MANTIENE AUDIO) -->
     <div class="card">
         <div class="demo-title">💣 Estoy en B</div>
         <audio controls>
@@ -131,9 +167,14 @@
         </audio>
     </div>
 
+    <!-- Nunca quise carrearte -->
     <div class="card">
         <div class="demo-title">🎯 Nunca quise carrearte</div>
-        <p style="color: #ff3c00; font-weight: bold;">🚧 EN PROCESO</p>
+
+        <a href="https://www.youtube.com/watch?v=AkcVF--XT_E" target="_blank" class="video-card">
+            <img src="https://img.youtube.com/vi/AkcVF--XT_E/hqdefault.jpg">
+            <div class="play-btn">▶</div>
+        </a>
     </div>
 
 </div>
