@@ -71,3 +71,18 @@ function handleContact(btn) {
         }, 3000);
     }, 1400);
 }
+function consultarProducto(btn) {
+    const card = btn.closest(".product-card");
+
+    const nombre = card.querySelector(".product-name").textContent;
+    const precio = card.querySelector(".retail").textContent;
+    const mayorista = card.querySelector(".wholesale").textContent;
+
+    const mensaje = `Hola! Quiero consultar por este producto:%0A
+📦 Producto: ${nombre}%0A
+💰 Precio: ${precio}%0A
+🏷️ ${mayorista}%0A
+¿Hay stock?`;
+
+    window.open("https://wa.me/5493885395300?text=" + mensaje, "_blank");
+}
