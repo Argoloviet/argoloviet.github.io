@@ -78,7 +78,7 @@ function consultarProducto(btn) {
     const precio = card.querySelector(".retail").textContent;
     const mayorista = card.querySelector(".wholesale").textContent;
 
-    const mensaje = `Hola! Quiero consultar por este producto:%0A
+    const mensaje = `Hola! Quiero consultár por este producto:%0A
 📦 Producto: ${nombre}%0A
 💰 Precio: ${precio}%0A
 🏷️ ${mayorista}%0A
